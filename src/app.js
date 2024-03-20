@@ -21,7 +21,10 @@ app.use(cookieParser());
 
 //router
 import authRoutes from "./routes/auth.routes.js";
+import productRoutes from "./routes/product.routes.js";
+
 app.use("/api/user", authRoutes);
+app.use("/api/product", productRoutes);
 
 //error handling
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
