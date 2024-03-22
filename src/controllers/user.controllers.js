@@ -1,9 +1,11 @@
+import { User } from "../models/user.modal.js";
 import { generateToken } from "../config/jwtToken.js";
 import { generateRefreshToken } from "../config/refreshToken.js";
-import { User } from "../models/user.modal.js";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
-import jwt, { decode } from "jsonwebtoken";
+import { sendEmail } from "./email.controllers.js";
 import expressAsyncHandler from "express-async-handler";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const handleRefreshToken = expressAsyncHandler(async (req, res) => {
   const cookie = req.cookies;
@@ -98,9 +100,12 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
     });
     return res.status(204); // forbidden
   }
-await User.findOneAndUpdate({ refreshToken: refreshToken }, {
-  refreshToken: ""
-});
+  await User.findOneAndUpdate(
+    { refreshToken: refreshToken },
+    {
+      refreshToken: "",
+    }
+  );
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -182,6 +187,79 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+//update password
+const updatePassword = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const password = req.body.password;
+  validateMongoDBId(_id);
+  const user = await User.findById(_id);
+  if (password) {
+    user.password = password;
+    const updatePassword = await user.save();
+    res.json({
+      message: "password updated successfully",
+      updatePassword,
+      success: true,
+    });
+  } else {
+    res.json({
+      message: "password not changed! you can proceed to previous password.",
+      user,
+      success: true,
+    });
+  }
+});
+//forgot password
+const forgotPassword = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("User not found with this email");
+  }
+  try {
+    const token = await user.createPasswordResetToken();
+    await user.save();
+    const resetURL = `Hi please follow this link to reset Your Password. This link is valid till 10 minutes from now <a href="http://localhost:8000/api/user/reset-password/${token}">Click Here</a>`;
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Forgot Password Link",
+      html: resetURL,
+    };
+    sendEmail(data);
+    res.json({
+      message: `An email verification has been sent on your email: ${email}, please verify.`,
+      token,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const resetPassword = expressAsyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    throw new Error("Token Expired! , Please try again later.");
+  } else {
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    res.json({
+      message: "your password has changed successfully.",
+      user,
+      success: true,
+    });
+  }
+});
+
 //admin can block a user
 const blockUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -229,6 +307,9 @@ export {
   getaUser,
   deleteaUser,
   updateUser,
+  updatePassword,
+  resetPassword,
+  forgotPassword,
   blockUser,
   unblockUser,
 };

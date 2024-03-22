@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 
 const app = express();
 app.use(
@@ -10,6 +11,7 @@ app.use(
   })
 );
 
+app.use(morgan('dev'));
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
@@ -30,6 +32,6 @@ app.use("/api/product", productRoutes);
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 
 app.use(notFound);
-app.use(errorHandler)
+app.use(errorHandler);
 
 export default app;
