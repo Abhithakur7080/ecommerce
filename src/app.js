@@ -11,7 +11,7 @@ app.use(
   })
 );
 
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
@@ -24,9 +24,11 @@ app.use(cookieParser());
 //router
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
 
 app.use("/api/user", authRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/blog", blogRoutes);
 
 //error handling
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
