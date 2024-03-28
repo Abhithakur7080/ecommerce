@@ -3,7 +3,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
+//initialize app with express
 const app = express();
+
+//cross origin setup
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -11,28 +14,32 @@ app.use(
   })
 );
 
+//app configuration
 app.use(morgan("dev"));
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// app.use("/", (req, res) => {
-//   res.send("hello this is an ecommerce website");
-// });
-
-//router
+//router imports
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import blogCategoryRoutes from "./routes/blog.category.routes.js";
+import brandRoutes from "./routes/brand.routes.js";
 
+//router use
 app.use("/api/user", authRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/blog", blogRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/blog-category", blogCategoryRoutes);
+app.use("/api/brand", brandRoutes);
 
 //error handling
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
-
+//error configuration
 app.use(notFound);
 app.use(errorHandler);
 

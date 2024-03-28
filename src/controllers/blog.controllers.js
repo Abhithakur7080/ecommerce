@@ -69,6 +69,7 @@ const getAllBlogs = expressAsyncHandler(async (req, res) => {
     res.json({
       message: "All blogs fetched successfully.",
       blogs,
+      total: blogs.length,
       success: true,
     });
   } catch (error) {

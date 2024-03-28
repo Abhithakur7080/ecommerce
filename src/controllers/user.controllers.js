@@ -121,6 +121,7 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
     res.json({
       message: "all users fetched successfully",
       allUsers,
+      total: allUsers.length,
       success: true,
     });
   } else {
