@@ -161,7 +161,7 @@ const addToWishlist = expressAsyncHandler(async (req, res) => {
 
 const ratings = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, productId } = req.body;
+  const { star, productId, comment } = req.body;
   try {
     validateMongoDBId(_id);
     const product = await Product.findById(productId);
@@ -178,6 +178,7 @@ const ratings = expressAsyncHandler(async (req, res) => {
         {
           $set: {
             "ratings.$.star": star,
+            "ratings.$.comment": comment,
           },
         },
         {
@@ -191,6 +192,7 @@ const ratings = expressAsyncHandler(async (req, res) => {
           $push: {
             ratings: {
               star: star,
+              comment: comment,
               postedby: _id,
             },
           },
@@ -206,7 +208,6 @@ const ratings = expressAsyncHandler(async (req, res) => {
       .map((item) => item.star)
       .reduce((prev, curr) => prev + curr, 0);
     let actualRating = Math.round(ratingSum / totalRatings);
-
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
