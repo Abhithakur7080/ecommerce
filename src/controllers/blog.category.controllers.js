@@ -34,10 +34,10 @@ const deleteCatagory = expressAsyncHandler(async (req, res) => {
   const id = req.params.id;
   try {
     validateMongoDBId(id);
-    const newCategory = await BlogCategory.findByIdAndDelete(id);
+    const category = await BlogCategory.findByIdAndDelete(id);
     res.json({
       message: "category deleted successfully",
-      category: newCategory,
+      category,
       success: true,
     });
   } catch (error) {
