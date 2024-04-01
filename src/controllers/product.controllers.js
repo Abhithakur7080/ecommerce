@@ -3,6 +3,7 @@ import slugify from "slugify";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
 import { Product } from "../models/product.model.js";
 import { User } from "../models/user.modal.js";
+import { cloudinaryUploading } from "../utils/cloudinary.js";
 
 const createProduct = expressAsyncHandler(async (req, res) => {
   try {
@@ -224,9 +225,38 @@ const ratings = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-const uploadImages = expressAsyncHandler(async(req, res) => {
-  console.log("upload");
-})
+const uploadImages = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    validateMongoDBId(id);
+    const uploader = (path) => cloudinaryUploading(path, "products");
+    const urls = [];
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path);
+      urls.push(newPath);
+    }
+    const findProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        images: urls.map((file) => {
+          return file;
+        }),
+      },
+      {
+        new: true,
+      }
+    );
+    res.json({
+      message: "Images uploaded successfully",
+      product: findProduct,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 export {
   createProduct,
   getAproduct,

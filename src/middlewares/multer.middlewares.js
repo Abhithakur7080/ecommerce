@@ -30,27 +30,60 @@ const uploadPhoto = multer({
 
 const productImgResize = async (req, res, next) => {
   if (!req.files) return next();
-  await Promise.all(
-    req.files.map(async (file) => {
-      const image = await Jimp.read(file.path)
-        .resize(300, 300)
-        .quality(90)
-        .writeAsync(`public/images/products/${file.filename}`);
-    })
-  );
+  try {
+    await Promise.all(
+      req.files.map(async (file) => {
+        await Jimp.read(file.path)
+          .then((image) => {
+            return image.resize(300, 300).quality(90).writeAsync(`public/images/${file.filename}`);
+          })
+          .catch((err) => {
+            throw new Error("Error in resizing: ", err)
+          });
+      })
+    );
+  } catch (err) {
+    console.error("Error resizing images:", err);
+  }
   next();
 };
 const blogImgResize = async (req, res, next) => {
   if (!req.files) return next();
-  await Promise.all(
-    req.files.map(async (file) => {
-      const image = await Jimp.read(file.path)
-        .resize(300, 300)
-        .quality(90)
-        .writeAsync(`public/images/blogs/${file.filename}`);
-    })
-  );
+  try {
+    await Promise.all(
+      req.files.map(async (file) => {
+        await Jimp.read(file.path)
+          .then((image) => {
+            return image.resize(300, 300).quality(90).writeAsync(`public/images/blogs/${file.filename}`);
+          })
+          .catch((err) => {
+            throw new Error("Error in resizing: ", err)
+          });
+      })
+    );
+  } catch (err) {
+    console.error("Error resizing images:", err);
+  }
+  next();
+};
+const bannerImgResize = async (req, res, next) => {
+  if (!req.files) return next();
+  try {
+    await Promise.all(
+      req.files.map(async (file) => {
+        await Jimp.read(file.path)
+          .then((image) => {
+            return image.resize(300, 300).quality(90).writeAsync(`public/images/banner/${file.filename}`);
+          })
+          .catch((err) => {
+            throw new Error("Error in resizing: ", err)
+          });
+      })
+    );
+  } catch (err) {
+    console.error("Error resizing images:", err);
+  }
   next();
 };
 
-export { uploadPhoto, productImgResize, blogImgResize };
+export { uploadPhoto, productImgResize, blogImgResize, bannerImgResize };
