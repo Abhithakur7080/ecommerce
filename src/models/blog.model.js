@@ -38,11 +38,7 @@ const blogSchema = Schema(
         ref: "User",
       },
     ],
-    image: {
-      type: String,
-      default:
-        "https://web-images.pixpa.com/4OhHdoXYkIXR4D1rA9TPg9rXqviERHfxp0UBiv6bEyk/rs:fit:1200:0/q:80/aHR0cHM6Ly9waXhwYWNvbS1pbWcucGl4cGEuY29tL2NvbS9hcnRpY2xlcy8xNTE2NTUzNzMwLXNodXR0ZXJzdG9ja180Mjk2MzEwMTUuanBn",
-    },
+    images: [],
     author: {
       type: String,
       default: "Admin",

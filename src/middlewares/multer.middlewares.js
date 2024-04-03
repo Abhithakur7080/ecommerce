@@ -35,7 +35,7 @@ const productImgResize = async (req, res, next) => {
       req.files.map(async (file) => {
         await Jimp.read(file.path)
           .then((image) => {
-            return image.resize(300, 300).quality(90).writeAsync(`public/images/${file.filename}`);
+            return image.resize(300, 300).quality(90).writeAsync(`public/images/products/${file.filename}`);
           })
           .catch((err) => {
             throw new Error("Error in resizing: ", err)

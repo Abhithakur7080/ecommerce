@@ -7,6 +7,7 @@ import expressAsyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+//create refresh token
 const handleRefreshToken = expressAsyncHandler(async (req, res) => {
   const cookie = req.cookies;
   if (!cookie?.refreshToken) throw new Error("No Refresh Token in cookies");
@@ -47,8 +48,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
     throw new Error("User Already Exists");
   }
 });
-
-//login user
+//user login
 const loginUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //find user
@@ -86,6 +86,48 @@ const loginUser = expressAsyncHandler(async (req, res) => {
     throw new Error("Invalid email/password");
   }
 });
+//admin login
+const loginAdmin = expressAsyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  //find admin
+  const findAdmin = await User.findOne({ email: email });
+  if (findAdmin.role !== "admin") {
+    throw new Error("You are not Authorised.");
+  }
+  // check if found then check password
+  if (findAdmin && (await findAdmin.isPasswordCorrect(password))) {
+    const refreshToken = generateRefreshToken(findAdmin?._id);
+    const data = await User.findByIdAndUpdate(
+      findAdmin._id,
+      {
+        refreshToken: refreshToken,
+      },
+      {
+        new: true,
+      }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    const admin = {
+      _id: findAdmin._id,
+      firstname: findAdmin?.firstname,
+      lastname: findAdmin?.lastname,
+      email: findAdmin?.email,
+      mobile: findAdmin?.mobile,
+      refreshToken: generateToken(findAdmin?._id),
+    };
+    res.json({
+      message: "user logged in successfully",
+      admin,
+      success: true,
+    });
+  } else {
+    throw new Error("Invalid email/password");
+  }
+});
+//logout user
 const logoutUser = expressAsyncHandler(async (req, res) => {
   const cookie = req.cookies;
   if (!cookie?.refreshToken) {
@@ -128,7 +170,6 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
     throw new Error("failed to fetch all users data");
   }
 });
-
 //admin can a user details
 const getaUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -161,7 +202,6 @@ const deleteaUser = expressAsyncHandler(async (req, res) => {
     throw new Error("User doesn't exist!");
   }
 });
-
 //update a user details
 const updateUser = expressAsyncHandler(async (req, res) => {
   try {
@@ -237,7 +277,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
+//reset password
 const resetPassword = expressAsyncHandler(async (req, res) => {
   const { password } = req.body;
   const { token } = req.params;
@@ -260,7 +300,6 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
     });
   }
 });
-
 //admin can block a user
 const blockUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -299,10 +338,99 @@ const unblockUser = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+//user can add or remove a product in wishlist
+const addToWishlist = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { productId } = req.body;
+  try {
+    validateMongoDBId(_id);
+    validateMongoDBId(productId);
+    const user = await User.findById(_id);
+    const alreadyAdded = user.wishlist.find(
+      (id) => id.toString() === productId.toString()
+    );
+    if (alreadyAdded) {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $pull: {
+            wishlist: productId,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        message: "product removed from wishlist",
+        user,
+        success: true,
+      });
+    } else {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $push: {
+            wishlist: productId,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        message: "product added to wishlist",
+        user,
+        success: true,
+      });
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//get user wishlist
+const getWishlist = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.json({
+      message: "user wishlist fetched successfully",
+      user: findUser,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//update address
+const saveAddress = expressAsyncHandler(async(req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const updateUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        address: req?.body?.address
+      },
+      {
+        new: true 
+      }
+    );
+    res.json({
+      message: "Address saved successfully",
+      user: updateUser,
+      success: true
+    })
+  } catch (error) {
+    throw new Error(error);
+  }
+})
 export {
   handleRefreshToken,
   createUser,
   loginUser,
+  loginAdmin,
   logoutUser,
   getAllUsers,
   getaUser,
@@ -313,4 +441,7 @@ export {
   forgotPassword,
   blockUser,
   unblockUser,
+  addToWishlist,
+  getWishlist,
+  saveAddress
 };

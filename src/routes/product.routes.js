@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  addToWishlist,
   createProduct,
   deleteProduct,
   getAllProducts,
@@ -24,7 +23,6 @@ router.get("/", getAllProducts);
 router.get("/:id", getAproduct);
 //U-UPDATE
 router.put("/update/:id", authMiddleware, isAdmin, updateProduct);
-router.put("/wishlist", authMiddleware, addToWishlist);
 router.put("/rating", authMiddleware, ratings);
 router.put(
   "/upload/:id",

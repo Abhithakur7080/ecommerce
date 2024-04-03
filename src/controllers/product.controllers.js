@@ -2,7 +2,6 @@ import expressAsyncHandler from "express-async-handler";
 import slugify from "slugify";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
 import { Product } from "../models/product.model.js";
-import { User } from "../models/user.modal.js";
 import { cloudinaryUploading } from "../utils/cloudinary.js";
 
 const createProduct = expressAsyncHandler(async (req, res) => {
@@ -110,55 +109,7 @@ const deleteProduct = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-const addToWishlist = expressAsyncHandler(async (req, res) => {
-  const { _id } = req.user;
-  const { productId } = req.body;
-  try {
-    validateMongoDBId(_id);
-    validateMongoDBId(productId);
-    const user = await User.findById(_id);
-    const alreadyAdded = user.wishlist.find(
-      (id) => id.toString() === productId.toString()
-    );
-    if (alreadyAdded) {
-      let user = await User.findByIdAndUpdate(
-        _id,
-        {
-          $pull: {
-            wishlist: productId,
-          },
-        },
-        {
-          new: true,
-        }
-      );
-      res.json({
-        message: "product removed from wishlist",
-        user,
-        success: true,
-      });
-    } else {
-      let user = await User.findByIdAndUpdate(
-        _id,
-        {
-          $push: {
-            wishlist: productId,
-          },
-        },
-        {
-          new: true,
-        }
-      );
-      res.json({
-        message: "product added to wishlist",
-        user,
-        success: true,
-      });
-    }
-  } catch (error) {
-    throw new Error(error);
-  }
-});
+
 
 const ratings = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -263,7 +214,6 @@ export {
   getAllProducts,
   updateProduct,
   deleteProduct,
-  addToWishlist,
   ratings,
   uploadImages,
 };

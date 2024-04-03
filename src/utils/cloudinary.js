@@ -12,12 +12,20 @@ const cloudinaryUploading = async (localFilePath, folderName) => {
     if (!localFilePath) return null;
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
-      folder: `ecommerce/${folderName}`
+      folder: `ecommerce/${folderName}`,
     });
     //file has been uploaded successfully
-    // console.log("File is uploaded on cloudinary", response.url);
-    console.log(localFilePath);
     fs.unlinkSync(localFilePath); //remove after uploading from local
+    if (folderName === "products")
+      fs.unlinkSync(
+        localFilePath.substring(0, 13) +
+          "\\products" +
+          localFilePath.substring(13)
+      );//remove after uploading from local
+    if (folderName === "blogs")
+      fs.unlinkSync(
+        localFilePath.substring(0, 13) + "\\blogs" + localFilePath.substring(13)
+      ); //remove after uploading from local
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath); //remove the locally saved temporary file as the operation got failed

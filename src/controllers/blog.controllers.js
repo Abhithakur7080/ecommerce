@@ -235,12 +235,19 @@ const uploadImages = expressAsyncHandler(async (req, res) => {
   try {
     validateMongoDBId(id);
     const uploader = (path) => cloudinaryUploading(path, "blogs");
-    const urls = req.files[0];
-    const newUrl = await uploader(urls.path)
-    const findProduct = await Blog.findByIdAndUpdate(
+    const urls = [];
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path);
+      urls.push(newPath);
+    }
+    const findBlog = await Blog.findByIdAndUpdate(
       id,
       {
-        images: newUrl
+        images: urls.map((file) => {
+          return file;
+        }),
       },
       {
         new: true,
@@ -248,7 +255,7 @@ const uploadImages = expressAsyncHandler(async (req, res) => {
     );
     res.json({
       message: "Images uploaded successfully",
-      product: findProduct,
+      blog: findBlog,
       success: true,
     });
   } catch (error) {
