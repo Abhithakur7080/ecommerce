@@ -2,6 +2,7 @@ import express from "express";
 //all required controllers
 import {
   addToWishlist,
+  applyCoupon,
   blockUser,
   createUser,
   deleteaUser,
@@ -33,6 +34,7 @@ router.post("/user/login", loginUser);
 router.post("/admin/login", loginAdmin);
 router.post("/forgot-password", forgotPassword);
 router.post("/cart", authMiddleware, userCart);
+router.post("/coupon", authMiddleware, applyCoupon);
 //R-READ
 router.get("/all-users", getAllUsers);
 router.get("/refresh", handleRefreshToken);

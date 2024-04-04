@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
+import { Coupon } from "../models/coupon.modal.js";
 
 //create refresh token
 const handleRefreshToken = expressAsyncHandler(async (req, res) => {
@@ -494,12 +495,43 @@ const emptyUserCart = expressAsyncHandler(async (req, res) => {
   try {
     validateMongoDBId(_id);
     const user = await User.findById(_id);
-    const cart = await Cart.findOneAndDelete({orderBy: user._id})
+    const cart = await Cart.findOneAndDelete({ orderBy: user._id });
     res.json({
       message: "user cart deleted successfully",
       cart,
       success: true,
     });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const applyCoupon = expressAsyncHandler(async (req, res) => {
+  const { coupon } = req.body;
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const validCoupon = await Coupon.findOne({ name: coupon });
+    if (!validCoupon) {
+      throw new Error("Invalid coupon!");
+    }
+    const user = await User.findById(_id);
+    let { cartTotal } = await Cart.findOne({
+      orderBy: user._id,
+    }).populate("products.product");
+    let totalAfterDiscount = (
+      cartTotal -
+      (cartTotal * validCoupon.discount) / 100
+    ).toFixed(2);
+    await Cart.findOneAndUpdate(
+      { orderBy: user._id },
+      { totalAfterDiscount },
+      { new: true }
+    );
+    res.json({
+      message: `${coupon} coupon applied`,
+      totalAfterDiscount,
+      success: true
+    })
   } catch (error) {
     throw new Error(error);
   }
@@ -524,5 +556,6 @@ export {
   saveAddress,
   userCart,
   getUserCart,
-  emptyUserCart
+  emptyUserCart,
+  applyCoupon
 };
