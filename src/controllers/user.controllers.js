@@ -6,6 +6,8 @@ import { sendEmail } from "./email.controllers.js";
 import expressAsyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { Cart } from "../models/cart.model.js";
+import { Product } from "../models/product.model.js";
 
 //create refresh token
 const handleRefreshToken = expressAsyncHandler(async (req, res) => {
@@ -170,7 +172,7 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
     throw new Error("failed to fetch all users data");
   }
 });
-//admin can a user details
+//admin can see a user details
 const getaUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDBId(id);
@@ -404,28 +406,104 @@ const getWishlist = expressAsyncHandler(async (req, res) => {
   }
 });
 //update address
-const saveAddress = expressAsyncHandler(async(req, res) => {
+const saveAddress = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBId(_id);
     const updateUser = await User.findByIdAndUpdate(
       _id,
       {
-        address: req?.body?.address
+        address: req?.body?.address,
       },
       {
-        new: true 
+        new: true,
       }
     );
     res.json({
       message: "Address saved successfully",
       user: updateUser,
-      success: true
-    })
+      success: true,
+    });
   } catch (error) {
     throw new Error(error);
   }
-})
+});
+//add to cart functionality
+const userCart = expressAsyncHandler(async (req, res) => {
+  const { cart } = req.body;
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    let products = [];
+    const user = await User.findById(_id);
+    const alreadyExistInCart = await Cart.findOne({ orderBy: user._id });
+    if (alreadyExistInCart) {
+      await Cart.findByIdAndDelete(alreadyExistInCart._id);
+    }
+    for (let i = 0; i < cart.length; i++) {
+      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
+      let object = {
+        product: cart[i]._id,
+        count: cart[i].count,
+        color: cart[i].color,
+        price: getPrice.price,
+      };
+      products.push(object);
+    }
+    let cartTotal = 0;
+    for (let i = 0; i < products.length; i++) {
+      cartTotal = cartTotal + products[i].price * products[i].count;
+    }
+    let newCart = await new Cart({
+      products,
+      cartTotal,
+      orderBy: user?._id,
+    }).save();
+    res.json({
+      message: "cart updated successfully",
+      cart: newCart,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//get user cart items
+const getUserCart = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const cart = await Cart.findOne({ orderBy: _id }).populate(
+      "products.product"
+    );
+    if (!cart) {
+      throw new Error("user cart doesn't exist!");
+    }
+    res.json({
+      message: "user cart fetched successfully",
+      cart,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//empty user cart items
+const emptyUserCart = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const user = await User.findById(_id);
+    const cart = await Cart.findOneAndDelete({orderBy: user._id})
+    res.json({
+      message: "user cart deleted successfully",
+      cart,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 export {
   handleRefreshToken,
   createUser,
@@ -443,5 +521,8 @@ export {
   unblockUser,
   addToWishlist,
   getWishlist,
-  saveAddress
+  saveAddress,
+  userCart,
+  getUserCart,
+  emptyUserCart
 };

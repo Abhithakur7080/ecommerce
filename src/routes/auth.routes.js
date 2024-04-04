@@ -5,8 +5,10 @@ import {
   blockUser,
   createUser,
   deleteaUser,
+  emptyUserCart,
   forgotPassword,
   getAllUsers,
+  getUserCart,
   getWishlist,
   getaUser,
   handleRefreshToken,
@@ -18,6 +20,7 @@ import {
   unblockUser,
   updatePassword,
   updateUser,
+  userCart,
 } from "../controllers/user.controllers.js";
 //middlewares
 import { authMiddleware, isAdmin } from "../middlewares/auth.middleware.js";
@@ -29,12 +32,14 @@ router.post("/register", createUser);
 router.post("/user/login", loginUser);
 router.post("/admin/login", loginAdmin);
 router.post("/forgot-password", forgotPassword);
+router.post("/cart", authMiddleware, userCart);
 //R-READ
 router.get("/all-users", getAllUsers);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logoutUser);
 router.get("/current-user/:id", authMiddleware, isAdmin, getaUser);
 router.get("/wishlist", authMiddleware, getWishlist);
+router.get("/cart", authMiddleware, getUserCart);
 //U-UPDATE
 router.put("/reset-password/:token", resetPassword);
 router.put("/password", authMiddleware, updatePassword);
@@ -42,8 +47,9 @@ router.put("/edit", authMiddleware, updateUser);
 router.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 router.put("/unblock-user/:id", authMiddleware, isAdmin, unblockUser);
 router.put("/wishlist", authMiddleware, addToWishlist);
-router.put("/address", authMiddleware, saveAddress)
+router.put("/address", authMiddleware, saveAddress);
 //D-DELETE
 router.delete("/:id", authMiddleware, deleteaUser);
+router.delete("/empty/cart", authMiddleware, emptyUserCart);
 
 export default router;
