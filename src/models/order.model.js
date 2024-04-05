@@ -6,7 +6,7 @@ const orderSchema = new Schema(
       {
         product: {
           type: Schema.Types.ObjectId,
-          red: "Product",
+          ref: "Product",
         },
         count: Number,
         color: String,
@@ -33,5 +33,4 @@ const orderSchema = new Schema(
     timestamps: true,
   }
 );
-
 export const Order = mongoose.model("Order", orderSchema);

@@ -1,14 +1,17 @@
+//all imports
 import { User } from "../models/user.modal.js";
+import { Cart } from "../models/cart.model.js";
+import { Order } from "../models/order.model.js";
+import { Coupon } from "../models/coupon.modal.js";
+import { Product } from "../models/product.model.js";
 import { generateToken } from "../config/jwtToken.js";
+import { sendEmail } from "./email.controllers.js";
 import { generateRefreshToken } from "../config/refreshToken.js";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
-import { sendEmail } from "./email.controllers.js";
 import expressAsyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { Cart } from "../models/cart.model.js";
-import { Product } from "../models/product.model.js";
-import { Coupon } from "../models/coupon.modal.js";
+import uniqid from "uniqid";
 
 //create refresh token
 const handleRefreshToken = expressAsyncHandler(async (req, res) => {
@@ -505,6 +508,7 @@ const emptyUserCart = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+//apply user coupon
 const applyCoupon = expressAsyncHandler(async (req, res) => {
   const { coupon } = req.body;
   const { _id } = req.user;
@@ -530,10 +534,101 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     res.json({
       message: `${coupon} coupon applied`,
       totalAfterDiscount,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//create order on check out
+const createOrder = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { COD, couponApplied } = req.body;
+  try {
+    validateMongoDBId(_id);
+    if (!COD) {
+      throw new Error("create cash on delivery failed.");
+    }
+    const user = await User.findById(_id);
+    let userCart = await Cart.findOne({ orderBy: user._id });
+    let finalAmount = 0;
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmount = userCart.totalAfterDiscount;
+    } else {
+      finalAmount = userCart.cartTotal;
+    }
+    let newOrder = await new Order({
+      products: userCart.products,
+      paymentIntent: {
+        id: uniqid(),
+        method: "COD",
+        amount: finalAmount,
+        status: "Cash on Delivery",
+        created: Date.now(),
+        currency: "usd",
+      },
+      orderBy: user._id,
+      orderStatus: "Cash on Delivery",
+    }).save();
+    let update = await userCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
+    await Product.bulkWrite(update, {});
+    res.json({
+      message: "Order placed successfully",
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+//get ordered by user
+const getUserOrders = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBId(_id);
+    const userOrders = await Order.findOne({ orderBy: _id })
+      .populate("products.product")
+      .exec();
+    res.json({
+      message: "user orders fetched successfully",
+      orders: userOrders,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const updateOrderStatus = expressAsyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  try {
+    validateMongoDBId(id);
+    const findOrder = await Order.findByIdAndUpdate(
+      id,
+      {
+        orderStatus: status,
+        paymentIntent: {
+          status: status,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(findOrder);
+    res.json({
+      message: "Order status updated",
+      order: findOrder,
       success: true
     })
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error)
   }
 });
 export {
@@ -557,5 +652,8 @@ export {
   userCart,
   getUserCart,
   emptyUserCart,
-  applyCoupon
+  applyCoupon,
+  createOrder,
+  getUserOrders,
+  updateOrderStatus
 };

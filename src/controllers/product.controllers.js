@@ -109,8 +109,6 @@ const deleteProduct = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
-
 const ratings = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { star, productId, comment } = req.body;

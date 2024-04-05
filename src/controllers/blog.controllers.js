@@ -36,7 +36,6 @@ const updateBlog = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
 const getAblog = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
@@ -95,7 +94,6 @@ const deleteBlog = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
 const likeBlog = expressAsyncHandler(async (req, res) => {
   const { blogId } = req.body;
   try {
@@ -262,8 +260,6 @@ const uploadImages = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
-
 export {
   createBlog,
   updateBlog,

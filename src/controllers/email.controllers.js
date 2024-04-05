@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASSWORD,
   },
 });
-
 const sendEmail = expressAsyncHandler(async (data, req, res) => {
   const info = await transporter.sendMail({
     from: '"heyy 👻" <abc@gmail.com>', // sender address
@@ -23,5 +22,4 @@ const sendEmail = expressAsyncHandler(async (data, req, res) => {
   console.log("Message sent: %s", info.messageId);
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 });
-
 export { sendEmail };

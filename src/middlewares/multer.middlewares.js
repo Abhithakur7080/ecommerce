@@ -27,7 +27,6 @@ const uploadPhoto = multer({
   fileFilter: multerFilter,
   limits: { fileSize: 2000000 },
 });
-
 const productImgResize = async (req, res, next) => {
   if (!req.files) return next();
   try {

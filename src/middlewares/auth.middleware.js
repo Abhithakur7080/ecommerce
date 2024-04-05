@@ -20,7 +20,6 @@ const authMiddleware = expressAsyncHandler(async (req, res, next) => {
     throw new Error("There is no token attach to the header");
   }
 });
-
 const isAdmin = expressAsyncHandler(async (req, res, next) => {
   const { email } = req.user;
   const admin = await User.findOne({ email });
@@ -30,5 +29,4 @@ const isAdmin = expressAsyncHandler(async (req, res, next) => {
     next();
   }
 });
-
 export { authMiddleware, isAdmin };

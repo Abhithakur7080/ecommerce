@@ -58,7 +58,6 @@ const getAbrand = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
 const getAllBrands = expressAsyncHandler(async(req, res) => {
   try {
     const brands = await Brand.find({});
@@ -72,5 +71,4 @@ const getAllBrands = expressAsyncHandler(async(req, res) => {
     throw new Error(error);
   }
 })
-
 export { createBrand, updateBrand, deleteBrand, getAbrand, getAllBrands };

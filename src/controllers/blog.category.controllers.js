@@ -58,7 +58,6 @@ const getAcategory = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
 const getAllCategories = expressAsyncHandler(async(req, res) => {
   try {
     const categories = await BlogCategory.find({});
@@ -72,5 +71,4 @@ const getAllCategories = expressAsyncHandler(async(req, res) => {
     throw new Error(error);
   }
 })
-
 export { createCatagory, updateCatagory, deleteCatagory, getAcategory, getAllCategories };
