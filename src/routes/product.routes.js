@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createProduct,
+  deleteImages,
   deleteProduct,
   getAllProducts,
   getAproduct,
@@ -33,6 +34,7 @@ router.put(
   uploadImages
 );
 //D-DELETE
-router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
+router.delete("/delete/:id", authMiddleware, isAdmin, deleteProduct);
+router.delete("/image", authMiddleware, isAdmin, deleteImages);
 
 export default router;

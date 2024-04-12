@@ -37,13 +37,15 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    images: {
-      type: Array,
-    },
-    color: {
-      type: String,
-      required: true,
-    },
+    images: [
+      {
+        public_id: String,
+        asset_id: String,
+        url: String
+      }
+    ],
+    color: [],
+    tags: [],
     ratings: [
       {
         star: Number,

@@ -2,7 +2,10 @@ import expressAsyncHandler from "express-async-handler";
 import slugify from "slugify";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
 import { Product } from "../models/product.model.js";
-import { cloudinaryUploading } from "../utils/cloudinary.js";
+import {
+  cloudinaryUploading,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 const createProduct = expressAsyncHandler(async (req, res) => {
   try {
@@ -174,32 +177,76 @@ const ratings = expressAsyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+// const uploadImages = expressAsyncHandler(async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const uploader = (path) => cloudinaryUploading(path, "products");
+//     const urls = [];
+//     const files = req.files;
+//     for (const file of files) {
+//       const { path } = file;
+//       const newPath = await uploader(path);
+//       urls.push(newPath);
+//     }
+//     const images = urls.map((file) => {
+//       return {
+//         url: file.url,
+//         asset_id: file.asset_id,
+//         public_id: file.public_id,
+//       };
+//     });
+//     await Product.findByIdAndUpdate(id, {
+//       $push: images,
+//     });
+//     res.json({
+//       message: "Images uploaded successfully",
+//       image: images,
+//       success: true,
+//     });
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// });
 const uploadImages = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    validateMongoDBId(id);
     const uploader = (path) => cloudinaryUploading(path, "products");
-    const urls = [];
     const files = req.files;
     for (const file of files) {
       const { path } = file;
       const newPath = await uploader(path);
-      urls.push(newPath);
+      const image = {
+        url: newPath.url,
+        asset_id: newPath.asset_id,
+        public_id: newPath.public_id,
+      };
+      await Product.findByIdAndUpdate(id, {
+        $push: { images: image },
+      });
     }
-    const findProduct = await Product.findByIdAndUpdate(
-      id,
-      {
-        images: urls.map((file) => {
-          return file;
-        }),
-      },
-      {
-        new: true,
-      }
-    );
     res.json({
       message: "Images uploaded successfully",
-      product: findProduct,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const deleteImages = expressAsyncHandler(async (req, res) => {
+  const { publicId } = req.body;
+  try {
+    deleteFromCloudinary(publicId);
+    const product = await Product.findOneAndUpdate(
+      { "images.public_id": publicId },
+      { $pull: { images: { public_id: publicId } } },
+      { new: true }
+    );
+    if(!product){
+      throw new Error("product not found")
+    }
+    res.json({
+      message: "Image deleted",
       success: true,
     });
   } catch (error) {
@@ -214,4 +261,5 @@ export {
   deleteProduct,
   ratings,
   uploadImages,
+  deleteImages,
 };

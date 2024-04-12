@@ -2,7 +2,7 @@ import { Blog } from "../models/blog.model.js";
 import { User } from "../models/user.modal.js";
 import expressAsyncHandler from "express-async-handler";
 import { validateMongoDBId } from "../utils/validateMongoDBid.js";
-import { cloudinaryUploading } from "../utils/cloudinary.js";
+import { cloudinaryUploading, deleteFromCloudinary } from "../utils/cloudinary.js";
 
 const createBlog = expressAsyncHandler(async (req, res) => {
   try {
@@ -231,29 +231,43 @@ const dislikeBlog = expressAsyncHandler(async (req, res) => {
 const uploadImages = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    validateMongoDBId(id);
     const uploader = (path) => cloudinaryUploading(path, "blogs");
-    const urls = [];
     const files = req.files;
     for (const file of files) {
       const { path } = file;
       const newPath = await uploader(path);
-      urls.push(newPath);
+      const image = {
+        url: newPath.url,
+        asset_id: newPath.asset_id,
+        public_id: newPath.public_id,
+      };
+      await Blog.findByIdAndUpdate(id, {
+        $push: { images: image },
+      });
     }
-    const findBlog = await Blog.findByIdAndUpdate(
-      id,
-      {
-        images: urls.map((file) => {
-          return file;
-        }),
-      },
-      {
-        new: true,
-      }
-    );
     res.json({
       message: "Images uploaded successfully",
-      blog: findBlog,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const deleteImages = expressAsyncHandler(async (req, res) => {
+  const { publicId } = req.body;
+  try {
+    deleteFromCloudinary(publicId);
+    const blog = await Blog.findOneAndUpdate(
+      { "images.public_id": publicId },
+      { $pull: { images: { public_id: publicId } } },
+      { new: true }
+    );
+    if(!blog){
+      throw new Error("blog not found")
+    }
+    res.json({
+      message: "Image deleted",
       success: true,
     });
   } catch (error) {
@@ -268,5 +282,6 @@ export {
   deleteBlog,
   likeBlog,
   dislikeBlog,
-  uploadImages
+  uploadImages,
+  deleteImages
 };

@@ -38,7 +38,13 @@ const blogSchema = Schema(
         ref: "User",
       },
     ],
-    images: [],
+    images: [
+      {
+        public_id: String,
+        asset_id: String,
+        url: String
+      }
+    ],
     author: {
       type: String,
       default: "Admin",

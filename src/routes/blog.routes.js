@@ -2,6 +2,7 @@ import express from "express";
 import {
   createBlog,
   deleteBlog,
+  deleteImages,
   dislikeBlog,
   getAblog,
   getAllBlogs,
@@ -32,6 +33,7 @@ router.put(
   uploadImages
 );
 //D-DELETE
-router.delete("/:id", authMiddleware, isAdmin, deleteBlog);
+router.delete("/delete/:id", authMiddleware, isAdmin, deleteBlog);
+router.delete("/image", authMiddleware, isAdmin, deleteImages);
 
 export default router;
