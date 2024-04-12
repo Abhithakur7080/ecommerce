@@ -52,9 +52,99 @@ npm run dev
 List all available API endpoints along with a brief description of each. Include examples of request and response payloads if possible. For example:
 ##### USER/ADMIN
 - `CREATE /api/user/register`: creating new user
+- Request
+ ```json
+{
+  "firstname": "abc",
+  "lastname": "xyz",
+  "email": "a@gmail.com",
+  "mobile": "9100000000",
+  "password": "123456"
+}
+```
+- Response
+```json
+{
+  "message": "user registered successfully",
+  "newUser": {
+    "firstname": "abc",
+    "lastname": "xyz",
+    "email": "xyz@gmail.com",
+    "mobile": "9100000012",
+    "password": "$2b$10$AH5xMU56Hk1MEfhTYBBA/ekrplE1kP49hK2U03tnyLv91WHqCENs6",
+    "role": "user",
+    "isBlocked": false,
+    "cart": [],
+    "wishlist": [],
+    "_id": "6618f393e1deac98aa0968d1",
+    "createdAt": "2024-04-12T08:40:51.809Z",
+    "updatedAt": "2024-04-12T08:40:51.809Z",
+    "__v": 0
+  },
+  "success": true
+}
+```
 - `CREATE /api/user/user/login`: user logged in
+- Request
+ ```json
+{
+    "email": "xyz@gmail.com",
+    "password": "123456"
+}
+```
+- Response
+```json
+{
+    "message": "user logged in successfully",
+    "user": {
+        "_id": "6618f393e1deac98aa0968d1",
+        "firstname": "abc",
+        "lastname": "xyz",
+        "email": "xyz@gmail.com",
+        "mobile": "9100000012",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MThmMzkzZTFkZWFjOThhYTA5NjhkMSIsImlhdCI6MTcxMjkxMjM5MSwiZXhwIjoxNzEzMTcxNTkxfQ.uf-eNXvsxJuFMxrtI9j9WoVmWcw614dIfCujtQgfl9s"
+    },
+    "success": true
+}
+```
 - `CREATE /api/user/admin/login`: admin logged in
+- Request
+ ```json
+{
+    "email": "a@gmail.com",
+    "password": "123456789"
+}
+```
+- Response
+```json
+{
+    "message": "admin logged in successfully",
+    "user": {
+        "_id": "65f55a10d83ada07558653f4",
+        "firstname": "a",
+        "lastname": "kumar",
+        "email": "a@gmail.com",
+        "mobile": "910000000",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjU1YTEwZDgzYWRhMDc1NTg2NTNmNCIsImlhdCI6MTcxMjkxMjU1NSwiZXhwIjoxNzEzMTcxNzU1fQ.pZkXArnt-rFlf451vWUebuEej-RX7e6kDCkTDi-v2EI"
+    },
+    "success": true
+}
+```
 - `CREATE /api/user/forgot-password`: forgot user password
+- Request
+ ```json
+{
+    "email": "xyz@gmail.com"
+}
+```
+- Response
+```json
+{
+    "message": "An email verification has been sent on your email: xyz@gmail.com, please verify.",
+    "token": "40c5aacb45a205a8d1d1e46dc3d54de6b4f1d72a1ad26ba8bc4a665037265693",
+    "success": true
+}
+```
 - `CREATE /api/user/cart`: product add to cart
 - `CREATE /api/user/coupon`: apply a coupon on purchase
 - `CREATE /api/user/cart/cash-order`: on cash on delivery order
