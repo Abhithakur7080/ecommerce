@@ -51,7 +51,7 @@ npm run dev
 ### API Endpoints
 List all available API endpoints along with a brief description of each. Include examples of request and response payloads if possible. For example:
 ##### USER/ADMIN
-- `CREATE /api/user/register`: creating new user
+- `POST /api/user/register`: creating new user
 - Request
  ```json
 {
@@ -71,7 +71,6 @@ List all available API endpoints along with a brief description of each. Include
     "lastname": "xyz",
     "email": "xyz@gmail.com",
     "mobile": "9100000012",
-    "password": "$2b$10$AH5xMU56Hk1MEfhTYBBA/ekrplE1kP49hK2U03tnyLv91WHqCENs6",
     "role": "user",
     "isBlocked": false,
     "cart": [],
@@ -84,7 +83,7 @@ List all available API endpoints along with a brief description of each. Include
   "success": true
 }
 ```
-- `CREATE /api/user/user/login`: user logged in
+- `POST /api/user/user/login`: user logged in
 - Request
  ```json
 {
@@ -130,7 +129,7 @@ List all available API endpoints along with a brief description of each. Include
     "success": true
 }
 ```
-- `CREATE /api/user/forgot-password`: forgot user password
+- `POST /api/user/forgot-password`: forgot user password
 - Request
  ```json
 {
@@ -145,9 +144,58 @@ List all available API endpoints along with a brief description of each. Include
     "success": true
 }
 ```
-- `CREATE /api/user/cart`: product add to cart
-- `CREATE /api/user/coupon`: apply a coupon on purchase
-- `CREATE /api/user/cart/cash-order`: on cash on delivery order
+- POST /api/user/cart`: product add to cart
+- Request
+``` json
+{
+    "cart": [
+        {
+            "_id": "65fbb75e97cd9c951790e611",
+            "count": 5,
+            "color": "yellow"
+        },
+        {
+            "_id": "65fbbcb722aea18254625c5c",
+            "count": 15,
+            "color": "blue"
+        }
+    ]
+}
+```
+- Response
+``` json
+{
+    "message": "cart updated successfully",
+    "cart": {
+        "products": [
+            {
+                "product": "65fbb75e97cd9c951790e611",
+                "count": 5,
+                "color": "yellow",
+                "price": 5000,
+                "_id": "661b897095c4f7c26dc9567b"
+            },
+            {
+                "product": "65fbbcb722aea18254625c5c",
+                "count": 15,
+                "color": "blue",
+                "price": 1500,
+                "_id": "661b897095c4f7c26dc9567c"
+            }
+        ],
+        "cartTotal": 47500,
+        "orderBy": "6618f393e1deac98aa0968d1",
+        "_id": "661b897095c4f7c26dc9567a",
+        "createdAt": "2024-04-14T07:44:49.038Z",
+        "updatedAt": "2024-04-14T07:44:49.038Z",
+        "__v": 0
+    },
+    "success": true
+}
+```
+
+- `POST /api/user/coupon`: apply a coupon on purchase
+- `POST /api/user/cart/cash-order`: on cash on delivery order
 
 - `GET /api/user/all-users`: view all user details
 - `GET /api/user/refresh`: get refresh token
