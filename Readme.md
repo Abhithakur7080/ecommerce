@@ -106,7 +106,7 @@ List all available API endpoints along with a brief description of each. Include
     "success": true
 }
 ```
-- `CREATE /api/user/admin/login`: admin logged in
+- `POST /api/user/admin/login`: admin logged in
 - Request
  ```json
 {
@@ -196,12 +196,117 @@ List all available API endpoints along with a brief description of each. Include
 
 - `POST /api/user/coupon`: apply a coupon on purchase
 - `POST /api/user/cart/cash-order`: on cash on delivery order
-
-- `GET /api/user/all-users`: view all user details
-- `GET /api/user/refresh`: get refresh token
-- `GET /api/user/logout`: for logout user
-- `GET /api/user/current-user/:id`: getting user logged in if user previously logged in
+- `GET /api/user/all-users`: View all user details
+- Response:
+```json
+{
+  "message": "all users fetched successfully",
+  "allUsers": [
+      {
+          "_id": "65f55a10d83ada07558653f4",
+          "firstname": "a",
+          "lastname": "kumar",
+          "email": "a@gmail.com",
+          "mobile": "910000000",
+          "role": "admin",
+          "cart": [],
+          "wishlist": [
+              "65fbbcb722aea18254625c5c",
+              "65fbccf2e131c9391a91190d"
+          ],
+          "createdAt": "2024-03-16T08:36:32.762Z",
+          "updatedAt": "2024-04-14T07:20:31.108Z",
+          "__v": 0,
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjU1YTEwZDgzYWRhMDc1NTg2NTNmNCIsImlhdCI6MTcxMzA3OTIzMSwiZXhwIjoxNzEzMTY1NjMxfQ.DHe2_2cql7wQ5RDPZrmvgP2AHeRni2gVIXG95UaWMdw",
+          "isBlocked": false,
+          "address": "madhubani, bihar"
+      },
+      {
+          "_id": "65f84fa7885dbb9b0fbf6d3e",
+          "firstname": "abhi",
+          "lastname": "kumar",
+          "email": "abhi@gmail.com",
+          "mobile": "910000001",
+          "role": "user",
+          "isBlocked": false,
+          "cart": [],
+          "addess": [],
+          "wishlist": [
+              "65fbb75e97cd9c951790e611"
+          ],
+          "createdAt": "2024-03-18T14:28:55.754Z",
+          "updatedAt": "2024-04-04T06:47:20.880Z",
+          "__v": 0,
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Zjg0ZmE3ODg1ZGJiOWIwZmJmNmQzZSIsImlhdCI6MTcxMjIxMzI0MCwiZXhwIjoxNzEyMjk5NjQwfQ.LX5yLS9HNPH_NqBHaTlm3JtlFkmhS9bQ4gJ6eGqowIg"
+      },
+      {
+          "_id": "65fd12b59b4034575d974ff9",
+          "firstname": "abhijeet",
+          "lastname": "kumar",
+          "email": "abhijeetkumar431323@gmail.com",
+          "mobile": "9100000000",
+          "role": "user",
+          "isBlocked": false,
+          "cart": [],
+          "addess": [],
+          "wishlist": [],
+          "createdAt": "2024-03-22T05:10:13.609Z",
+          "updatedAt": "2024-03-22T06:32:47.100Z",
+          "__v": 0,
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZmQxMmI1OWI0MDM0NTc1ZDk3NGZmOSIsImlhdCI6MTcxMTA4ODkxMywiZXhwIjoxNzExMTc1MzEzfQ.ic-cdzRt-5nkC18UI-bSkwZ2ZX2jgvvRai-omrG-YTU"
+      },
+      {
+          "_id": "6618f393e1deac98aa0968d1",
+          "firstname": "abc",
+          "lastname": "xyz",
+          "email": "xyz@gmail.com",
+          "mobile": "9100000012",
+          "role": "user",
+          "isBlocked": false,
+          "cart": [],
+          "wishlist": [],
+          "createdAt": "2024-04-12T08:40:51.809Z",
+          "updatedAt": "2024-04-14T07:43:32.998Z",
+          "__v": 0,
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MThmMzkzZTFkZWFjOThhYTA5NjhkMSIsImlhdCI6MTcxMzA4MDYxMiwiZXhwIjoxNzEzMTY3MDEyfQ.W6HKmMGX29XBDMxnQcU7KzUaD0NLXwIslTXqY2TBlsM",
+          "passwordResetExpires": "2024-04-12T09:14:44.130Z",
+          "passwordResetToken": "8a8698bebe600e55c24745f961faae34ca3f3bbf4cf29ebfc23c767d1bb2636d"
+      },
+      {
+          "_id": "661b81a2e704d853de26b5dd",
+          "firstname": "abc",
+          "lastname": "xyz",
+          "email": "a3@gmail.com",
+          "mobile": "9100000013",
+          "role": "user",
+          "isBlocked": false,
+          "cart": [],
+          "wishlist": [],
+          "createdAt": "2024-04-14T07:11:30.703Z",
+          "updatedAt": "2024-04-14T07:11:30.703Z",
+          "__v": 0
+      },
+      {
+          "_id": "661b82b3d049c61d1392e101",
+          "firstname": "abc",
+          "lastname": "xyz",
+          "email": "a5@gmail.com",
+          "mobile": "9100000014",
+          "role": "user",
+          "isBlocked": false,
+          "cart": [],
+          "wishlist": [],
+          "createdAt": "2024-04-14T07:16:04.017Z",
+          "updatedAt": "2024-04-14T07:16:04.017Z",
+          "__v": 0
+      }
+  ],
+  "total": 6,
+  "success": true
+}
+```
 - `GET /api/user/wishlist`: get user added products in wishlist
+
 - `GET /api/user/cart`: get user cart
 - `GET /api/user/order`: get user orders
 
@@ -211,6 +316,36 @@ List all available API endpoints along with a brief description of each. Include
 - `PUT /api/user/block-user/:id`: admin can block a user
 - `PUT /api/user/unblock-user/:id`: admin can unblock a user
 - `PUT /api/user/wishlist`: product added to wishlist
+- Request
+  ```json
+  {
+    "productId": "65fbbcb722aea18254625c5c"
+}
+  ```
+- Response
+  ```json
+  {
+    "message": "product added to wishlist",
+    "user": {
+        "_id": "6618f393e1deac98aa0968d1",
+        "firstname": "abc",
+        "lastname": "xyz",
+        "email": "xyz@gmail.com",
+        "mobile": "9100000012",
+        "role": "user",
+        "isBlocked": false,
+        "cart": [],
+        "wishlist": [
+            "65fbbcb722aea18254625c5c"
+        ],
+        "createdAt": "2024-04-12T08:40:51.809Z",
+        "updatedAt": "2024-04-16T15:37:34.403Z",
+        "__v": 0,
+        "refreshToken": ""
+    },
+    "success": true
+}
+  ```
 - `PUT /api/user/address`: update user address for checkout
 - `PUT /api/user/update/order-status/:id`: update user order status
 
