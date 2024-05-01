@@ -84,7 +84,6 @@ Here are listed all available API endpoints along with a brief description of ea
 - `POST /api/product/create`: create new product
 - `GET /api/product/:id`: get a product detail with product id
 - `GET /api/product/page=1&limit=3`: get all product detail with page, limit, sort and fields queries.
-- `GET /api/product/page=1&limit=3`: get all product detail with page, limit, sort and fields queries.
 - `PUT /api/product/:id`: update a product detail with product id
 - `PUT /api/product/upload/:id`: upload a product images with product id
 - `DELETE /api/product/delete/:id`: delete a product detail with product id
