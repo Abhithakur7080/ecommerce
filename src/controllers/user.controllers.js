@@ -44,9 +44,10 @@ const createUser = expressAsyncHandler(async (req, res) => {
   if (!findUser) {
     //create a user
     const newUser = await User.create(req.body);
+    const createdUser = await User.findById(newUser._id).select("-password")
     res.json({
       message: "user registered successfully",
-      newUser,
+      user: createdUser,
       success: true,
     });
   } else {
@@ -164,7 +165,7 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
 //admin can see all the users
 const getAllUsers = expressAsyncHandler(async (req, res) => {
   //find all users
-  const allUsers = await User.find({});
+  const allUsers = await User.find({}).select("-password");
   if (allUsers) {
     res.json({
       message: "all users fetched successfully",
@@ -181,7 +182,7 @@ const getaUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDBId(id);
   //find user by id
-  const user = await User.findById(id);
+  const user = await User.findById(id).select("-password");
   if (user) {
     res.json({
       message: "current user fetched successfully",
@@ -366,7 +367,7 @@ const addToWishlist = expressAsyncHandler(async (req, res) => {
         {
           new: true,
         }
-      );
+      ).select("-password");
       res.json({
         message: "product removed from wishlist",
         user,
@@ -383,7 +384,7 @@ const addToWishlist = expressAsyncHandler(async (req, res) => {
         {
           new: true,
         }
-      );
+      ).select("-password");
       res.json({
         message: "product added to wishlist",
         user,
@@ -399,7 +400,7 @@ const getWishlist = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBId(_id);
-    const findUser = await User.findById(_id).populate("wishlist");
+    const findUser = await User.findById(_id).select("-password").populate("wishlist");
     res.json({
       message: "user wishlist fetched successfully",
       user: findUser,
