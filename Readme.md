@@ -1,6 +1,6 @@
-# Ecommerce API
-## Frontend 
+# Ecommerce API 
 - Hosted Link [Explore](https://ecommerce-vw9h.onrender.com/)
+### Frontend
 - `https://ecommerce-vw9h.onrender.com` - Explore this base url then use all endpoints.
 ### Installation
 Below Provided step-by-step instructions on how to install and set up your project locally.
