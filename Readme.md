@@ -1,5 +1,7 @@
-# Ecommerce API
-
+# Ecommerce API 
+- Hosted Link [Explore](https://ecommerce-vw9h.onrender.com/)
+### Frontend
+- `https://ecommerce-vw9h.onrender.com` - Explore this base url then use all endpoints.
 ### Installation
 Below Provided step-by-step instructions on how to install and set up your project locally.
 Include any prerequisites, such as Node.js and MongoDB versions. For example:
@@ -81,7 +83,6 @@ Here are listed all available API endpoints along with a brief description of ea
 ##### PRODUCT
 - `POST /api/product/create`: create new product
 - `GET /api/product/:id`: get a product detail with product id
-- `GET /api/product/page=1&limit=3`: get all product detail with page, limit, sort and fields queries.
 - `GET /api/product/page=1&limit=3`: get all product detail with page, limit, sort and fields queries.
 - `PUT /api/product/:id`: update a product detail with product id
 - `PUT /api/product/upload/:id`: upload a product images with product id
