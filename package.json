@@ -4,10 +4,20 @@
   "description": "this is a advanced ecommerce which can be used by beginer also.",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "start": "node src/index.js"
   },
+  "keywords": [
+    "javascript",
+    "ecommerce",
+    "nodejs",
+    "backend"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Abhithakur7080/ecommerce.git"
